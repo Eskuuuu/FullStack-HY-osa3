@@ -2,10 +2,11 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 
-
 app.use(express.json())
 app.use(morgan('tiny'))
 
+const cors = require('cors')
+app.use(cors())
 
 
 let persons = [
@@ -56,6 +57,7 @@ app.delete('/api/persons/:id', (request, response) => {
 })  
 app.post('/api/persons', (request, response) => {
   const body = request.body
+  console.log(body)
   const generateId = () => {
       return(
       Math.floor(Math.random() * 100000)
@@ -101,7 +103,7 @@ app.get('/info', (request, response) => {
   response.send(message)
 })
 
-const PORT = 3001
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
-
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
