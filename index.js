@@ -31,79 +31,77 @@ let persons = [
   }
 ]
 
+app.get('/api/persons', (request, response) => {
+  response.json(persons)
+})
+
   
 app.get('/api/persons/:id', (request, response) => {
-    const id = (request.params.id)
+    const id = Number(request.params.id)
+    console.log("Requested ID:", id)
     const person = persons.find(person => person.id === id)
-
+    console.log(person)
     if (person) {
-        if (person.number) {
-            response.json(person.number)
-        } else {
-            response.status(404).end()
-        }
-    } else {
-        response.status(404).end()
-    }
+      return response.json(person.number)
+  } else {
+      return response.status(404).end()
+  }
   })
 
-  app.delete('/api/persons/:id', (request, response) => {
-    const id = (request.params.id)
-    persons = persons.filter(person => person.id !== id)
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  persons = persons.filter(person => person.id !== id)
+
+  response.status(204).end()
+})  
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+  const generateId = () => {
+      return(
+      Math.floor(Math.random() * 100000)
+      )
+  } 
+  if (!body.name) {
+      return response.status(400).json({ 
+        error: 'name missing' 
+      })
+
+  }
   
-    response.status(204).end()
-  })  
-
-  app.get('/api/persons', (request, response) => {
-    response.json(persons)
+  if (!body.number) {
+  return response.status(400).json({ 
+      error: 'number missing' 
   })
+  }
 
-  app.post('/api/persons', (request, response) => {
-    const body = request.body
-    const generateId = () => {
-        return(
-        Math.floor(Math.random() * 10000)
-        )
-    } 
-    if (!body.name) {
-        return response.status(400).json({ 
-          error: 'name missing' 
-        })
-
-    }
-    
-    if (!body.number) {
+  if (persons.some( person => person.name == body.name)) {
     return response.status(400).json({ 
-        error: 'number missing' 
+        error: 'name must be unique' 
     })
     }
 
-    if (persons.some( person => person.name == body.name)) {
-      return response.status(400).json({ 
-          error: 'name must be unique' 
-      })
-      }
+    const person = {
+      id: generateId(),
+      name: body.name,
+      number: body.number,
 
-      const person = {
-        name: body.name,
-        number: body.number,
-        id: generateId(),
-      }
+    }
 
-      persons = persons.concat(person)
-      response.json(person)
-  })
+    persons = persons.concat(person)
+    response.json(person)
+})
 
-  app.get('/info', (request, response) => {
-    const number = persons.length
-    const time = Date()
-    const message =`
-    <p>Phonebook has info for ${number} people</p>
-    <p>${time}</p>
-  `;
-    response.send(message)
-  })
+app.get('/info', (request, response) => {
+  const number = persons.length
+  const time = Date()
+  const message =`
+  <p>Phonebook has info for ${number} people</p>
+  <p>${time}</p>
+`;
+  response.send(message)
+})
 
 const PORT = 3001
 app.listen(PORT)
 console.log(`Server running on port ${PORT}`)
+
