@@ -57,7 +57,7 @@ app.delete('/api/persons/:id', (request, response) => {
 })  
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  console.log(body)
+  console.log('Post data:', body)
   const generateId = () => {
       return(
       Math.floor(Math.random() * 100000)
