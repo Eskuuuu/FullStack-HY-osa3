@@ -10,7 +10,6 @@ app.use(express.json())
 app.use(morgan('tiny'))
 app.use(express.static('dist'))
 app.use(cors())
-app.use(requestLogger)
 
 app.get('/api/persons', (request, response) => {
   Person.find({})
