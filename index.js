@@ -1,5 +1,4 @@
 require('dotenv').config()
-console.log('MONGO_URI:', process.env.MONGO_URI)
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
@@ -14,6 +13,7 @@ app.use(cors())
 app.get('/api/persons', (request, response) => {
   Person.find({})
   .then(persons => {
+    console.log('Found persons:', persons);
     response.json(persons)
   })  
 })
@@ -41,11 +41,18 @@ app.delete('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  if (body.content === undefined) {
-    return response.status(400).json({ error: 'content missing' })
+  if (!body.name){
+    return response.status(400).json({
+        error: 'name is missing'
+    })
+  }
+  if(!body.number) {
+      return response.status(400).json({
+          error: 'number is missing'
+      })
   }
 
-  const note = new Person({
+  const person = new Person({
     name: body.name,
     number: body.number,
   })
@@ -60,13 +67,12 @@ app.post('/api/persons', (request, response) => {
 
 
 app.get('/info', (request, response) => {
-  const number = persons.length
-  const time = Date()
-  const message =`
-  <p>Phonebook has info for ${number} people</p>
-  <p>${time}</p>
-`;
-  response.send(message)
+  Person.find({}).then( persons => {
+    response.send(
+      `<p>Phonebook has info for ${persons.length} people</p>
+      <p>${new Date().toString()}</p>`
+    )
+  })
 })
 
 const unknownEndpoint = (request, response) => {
