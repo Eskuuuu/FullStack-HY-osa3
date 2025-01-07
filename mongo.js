@@ -20,15 +20,15 @@ const personSchema = new mongoose.Schema({
 
 
 
-const Person = mongoose.model('Person', personSchema) 
+const Person = mongoose.model('Person', personSchema)
 
 if (process.argv.length === 3) {
-    Person.find({}).then(result => {
-        result.forEach( person => {
-            console.log(person)
-        })
-        mongoose.connection.close()
+  Person.find({}).then(result => {
+    result.forEach( person => {
+      console.log(person)
     })
+    mongoose.connection.close()
+  })
 }
 
 
@@ -39,9 +39,9 @@ const person = new Person({
 })
 
 if (process.argv.length === 5) {
-    person.save().then(result => { 
-        console.log('Puhelintiedot tallennettu!')
-        mongoose.connection.close()
-    })
+  person.save().then( () => {
+    console.log('Puhelintiedot tallennettu!')
+    mongoose.connection.close()
+  })
 }
 
